@@ -1,4 +1,4 @@
-[阅读中文版](./踩坑记录.md)
+[阅读中文版](./README-CN.md)
 
 # Troubleshooting Guide: Using Claude Code with Unity on Windows via WSL
 
