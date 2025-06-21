@@ -126,7 +126,7 @@ wsl.exe code -r --goto "%wsl_path%:%2" & disown & exit
 }
 ```
 2. 在rules中强调，每次完成修改后必须执行git commit，以确保我们能撤销错误修改
-3. 使用dll extractor mcp(https://github.com/Reekin/CSharpDllMetadataExtractor)获取最准确的接口调用信息，避免大模型知识混乱
+3. 使用dll extractor mcp(https://github.com/Reekin/CSharpDllMetadataExtractor) 获取最准确的接口调用信息，避免大模型知识混乱
 
 ***使用体验***
 
