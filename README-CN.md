@@ -7,6 +7,7 @@
 基本的安装步骤就是先装wsl，再在wsl里装cc(https://docs.anthropic.com/en/docs/claude-code/setup) 然后在windows开IDE remote 连接到wsl再从那打开windows下的Unity工程。前面的常规和使用步骤我就不作过多介绍了，自己看文档，遇到问题问ai即可。
 
 ***踩坑记录***
+前排提示：最后发现能相对稳定跑通的IDE只有VSCode
 
 1. cursor wsl terminal 启动claude后，/ide指令报找不到ide
   * 需要先在wsl用find找到claude-code.vsix的位置，再进powershell安装它
