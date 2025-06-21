@@ -4,7 +4,7 @@
 花了好几个晚上尝试跑通用cc开发Unity项目的流程，简单记录一下遇到的各种问题和解决方式。
 结论先放在前面：在当下阶段是不太建议尝试这个流程的——cc不原生支持windows，基本是一步一个坑，而且解决各种工程配置问题的成本都比较高。而且跑通后实际体验也并没有想象中那么惊艳。
 
-基本的安装步骤就是先装wsl，再在wsl里装cc（https://docs.anthropic.com/en/docs/claude-code/setup），然后在windows开IDE remote 连接到wsl再从那打开windows下的Unity工程。前面的常规和使用步骤我就不作过多介绍了，自己看文档，遇到问题问ai即可。
+基本的安装步骤就是先装wsl，再在wsl里装cc(https://docs.anthropic.com/en/docs/claude-code/setup) 然后在windows开IDE remote 连接到wsl再从那打开windows下的Unity工程。前面的常规和使用步骤我就不作过多介绍了，自己看文档，遇到问题问ai即可。
 
 ***踩坑记录***
 
@@ -114,7 +114,7 @@ set wsl_path=%wsl_path:J:=/mnt/j%
 wsl.exe code -r --goto "%wsl_path%:%2" & disown & exit
 ```
 12. 新增的代码文件，vscode提示不在当前workspace下
-  * 原因未知，重新生成一遍项目文件就好了（Unity内可以直接调用Rider的接口：https://docs.unity3d.com/Packages/com.unity.ide.rider@1.2/api/Packages.Rider.Editor.ProjectGeneration.html），可以考虑加进unity mcp能力中
+  * 原因未知，重新生成一遍项目文件就好了(Unity内可以直接调用Rider的接口：https://docs.unity3d.com/Packages/com.unity.ide.rider@1.2/api/Packages.Rider.Editor.ProjectGeneration.html) 可以考虑加进unity mcp能力中
 
 基本技巧
 1. 在~/.claude/CLAUDE.md里写rules（你希望它如何思考），在~/.claude/settings.json里指定文本编辑器
