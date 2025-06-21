@@ -1,6 +1,5 @@
-[阅读中文版](./README-CN.md)
-
 # Using Claude Code for Unity Development on Windows - ~~Guide~~ Deterrent
+[中文版](./踩坑记录.md)
 
 I spent several nights trying to get Claude Code (CC) working with Unity projects on Windows. Here's a record of the various issues encountered and their solutions.
 
@@ -9,6 +8,7 @@ I spent several nights trying to get Claude Code (CC) working with Unity project
 The basic installation steps are: install WSL first, then install CC in WSL (https://docs.anthropic.com/en/docs/claude-code/setup), then open your IDE on Windows with remote connection to WSL and open the Unity project from there. I won't go into too much detail about the regular setup and usage steps - check the documentation yourself and ask AI when you encounter problems.
 
 ## **Issues and Solutions**
+**Important Note**: The only IDE that was found to work relatively stably is VSCode.
 
 ### 1. `/ide` command reports IDE not found after starting Claude in Cursor WSL terminal
 - Need to first use `find` in WSL to locate the claude-code.vsix file, then install it in PowerShell
@@ -16,7 +16,7 @@ The basic installation steps are: install WSL first, then install CC in WSL (htt
 
 ### 2. MCP used by Cursor cannot be loaded by Claude Code
 - When using remote WSL, the IDE only recognizes WSL-format paths, so you need to replace paths in the mcp.json prepared for Claude to start with `/mnt/c/`
-- Python scripts cannot share the same venv between WSL and Windows - need to copy a separate copy for each
+- Python scripts can't share the same venv between WSL and Windows - need to copy a separate version for each
 - EXE programs should be directly callable
 
 ### 3. Cursor cannot properly perform C# syntax analysis on the project
@@ -26,8 +26,8 @@ The basic installation steps are: install WSL first, then install CC in WSL (htt
 ### 4. Rider remote WSL cannot properly load Unity project, reports missing MSBuild
 - Install .NET 9.0 SDK in WSL according to Microsoft's official website, then manually specify .NET CLI as `/usr/lib/dotnet/` in Settings → Build, Execution, Deployment → Toolset and Build, MSBuild will automatically match
 - Install mono-complete in WSL
-  - After installation, WSL cannot properly execute exe files. Need to add this code to WSL's `~/.profile`, which will automatically execute once to fix settings every time WSL starts
-```
+  - After installation, WSL cannot properly execute exe files. Need to add this code to WSL's `~/.profile`, which will automatically execute once to fix settings every time WSL starts:
+```bash
 # https://github.com/microsoft/WSL/issues/5466
 python.exe --version >/dev/null 2>&1 || \
 sudo update-binfmts --disable cli
@@ -35,8 +35,8 @@ sudo update-binfmts --disable cli
 
 ### 5. Rider remote WSL loads Unity project but cannot recognize any symbols
 - File paths in sln and csproj under WSL are still in Windows format, need to replace with WSL format starting with `/mnt/c/`
-- Add this code 2 (at the end) to the `Assets/Editor/` directory, then go to Preferences → External Tools to regenerate project files once. Now it will generate an additional batch of WSL-specific project files each time
-```
+- Add this code to the `Assets/Editor/` directory, then go to Preferences → External Tools to regenerate project files once. Now it will generate an additional batch of WSL-specific project files each time:
+```csharp
 using System.IO;
 using System.Text.RegularExpressions;
 using UnityEditor;
@@ -79,7 +79,7 @@ public class WSLProjectGenerator : AssetPostprocessor
 - But sometimes it doesn't take effect immediately. I also tried operations like `netsh advfirewall reset` to reset the firewall, not sure which operation actually worked
 
 ### 9. VSCode cannot analyze syntax
-- Install 9.0 according to Microsoft's official documentation
+- Install .NET 9.0 according to Microsoft's official documentation
 - Install mono-complete
 - Let VSCode select wsl.sln for loading
 - Choose Rider instead of VSCode in Preferences for project file generation (otherwise the language server will error due to Windows absolute path NuGet references, no solution found)
@@ -98,8 +98,7 @@ public class WSLProjectGenerator : AssetPostprocessor
 - Since WSL cannot monitor file changes in time, need to write a custom VS plugin + MCP server to let AI notify VSCode to refresh after each file modification. But the one I wrote doesn't seem to work, still exploring.
 
 ### 11. Cannot open files with WSL VSCode within the project
-- Let Unity open this bat file, passing parameters `"$(File)" $(Line)`
-
+- Let Unity open this bat file, passing parameters `"$(File)" $(Line)`:
 ```batch
 @echo off
 
@@ -121,9 +120,9 @@ wsl.exe code -r --goto "%wsl_path%:%2" & disown & exit
 ### 12. Newly added code files, VSCode prompts they are not in the current workspace
 - Reason unknown, regenerating project files once fixes it (Unity can directly call Rider's interface: https://docs.unity3d.com/Packages/com.unity.ide.rider@1.2/api/Packages.Rider.Editor.ProjectGeneration.html), could consider adding this to Unity MCP capabilities
 
-## Basic Tips
+## **Basic Tips**
 
-1. Write rules in `~/.claude/CLAUDE.md` (how you want it to think), specify text editor in `~/.claude/settings.json`
+1. Write rules in `~/.claude/CLAUDE.md` (how you want it to think), specify text editor in `~/.claude/settings.json`:
 ```json
 {
     "env": {
@@ -138,12 +137,12 @@ wsl.exe code -r --goto "%wsl_path%:%2" & disown & exit
 
 ## **User Experience**
 
-1. Although the level of automation is higher (one sentence can complete larger tasks including testing, commits, and other complete processes), the writing quality is not much better than Cursor with RIPER5. Whether in Unity technology stack mastery or experience in game development framework design, it doesn't perform as well as in web development, occasionally writing implementations that would never be adopted in actual projects - either amateur or junior level.
+1. **Code Quality**: Although the level of automation is higher (one sentence can complete larger tasks including testing, commits, and other complete processes), the writing quality is not much better than Cursor with R1PER5. Whether in Unity technology stack mastery or experience in game development framework design, it doesn't perform as well as in web development, occasionally writing implementations that would never be adopted in actual projects - either amateur or junior level.
 
-2. Based on point 1, you can't dare to skip checks - every modification must be manually reviewed. So the workflow becomes: input command → wait dozens of seconds → review → adjust. Humans cannot break away from this cycle, so productivity doesn't improve, and you can't achieve what some people say about letting it run all night. Considering its writing level, overall efficiency actually decreases. And obviously this vibe coding work style really makes people dumber.
+2. **Workflow Issues**: Based on point 1, you can't dare to skip checks - every modification must be manually reviewed. So the workflow becomes: input command → wait dozens of seconds → review → adjust. Humans cannot break away from this cycle, so productivity doesn't improve, and you can't achieve what some people say about letting it run all night. Considering its writing level, overall efficiency actually decreases. And obviously this vibe coding work style really makes people dumber.
 
-3. Insufficient IDE control: The IDE MCP capabilities provided by the CC plugin seem to only include diff and diagnostic. High-frequency functions used by humans in development like F12 to view definitions, Shift+F12 to view references, etc., CC cannot do. Often you can only watch it stupidly execute n file search commands to find a class. Moreover, in cross-system usage scenarios, file changes cannot be perceived in time, and CC often gets outdated linter information. You can only wait for it to complete tasks, then go into Unity to compile before it can get correct compilation results, which seriously affects continuity.
+3. **Limited IDE Control**: The IDE MCP capabilities provided by the CC plugin seem to only include diff and diagnostic. High-frequency functions used by humans in development like F12 to view definitions, Shift+F12 to view references, etc., CC cannot do. Often you can only watch it stupidly execute multiple file search commands to find a class. Moreover, in cross-system usage scenarios, file changes cannot be perceived in time, and CC often gets outdated linter information. You can only wait for it to complete tasks, then go into Unity to compile before it can get correct compilation results, which seriously affects continuity.
 
-4. Memory/attention issues: In real development processes, after we propose requirements and communicate with programmers to form conclusions, programmers will develop according to the discussion conclusions and deliver results that meet expectations. But in the collaboration process with CC, even if I clearly provide goals, technology choices, development principles and other information in the conversation, and have it recorded in project memory, after `/clear` when it re-reads from memory, the understanding differs greatly from the previous conversation, giving implementations with very large deviations. Currently, it seems that CLAUDE.md under the project is not sufficient to support the "dialogue → form documentation → develop according to documentation" process. You must emphasize with prompts in each round of dialogue to have sufficient guiding effect.
+4. **Memory/Attention Issues**: In real development processes, after we propose requirements and communicate with programmers to form conclusions, programmers will develop according to the discussion conclusions and deliver results that meet expectations. But in the collaboration process with CC, even if I clearly provide goals, technology choices, development principles and other information in the conversation, and have it recorded in project memory, after `/clear` when it re-reads from memory, the understanding differs greatly from the previous conversation, giving implementations with very large deviations. Currently, it seems that CLAUDE.md under the project is not sufficient to support the "dialogue → form documentation → develop according to documentation" process. You must emphasize with prompts in each round of dialogue to have sufficient guiding effect.
 
-5. GUI missing, poor input experience, Windows doesn't support image uploads, various experience detail issues.
+5. **UI/UX Issues**: GUI missing, poor input experience, Windows doesn't support image uploads, various experience detail issues.
