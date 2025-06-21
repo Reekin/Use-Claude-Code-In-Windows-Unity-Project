@@ -1,5 +1,5 @@
 # Using Claude Code for Unity Development on Windows - ~~Guide~~ Deterrent
-[中文版](./踩坑记录.md)
+[中文版](./README-CN.md)
 
 I spent several nights trying to get Claude Code (CC) working with Unity projects on Windows. Here's a record of the various issues encountered and their solutions.
 
