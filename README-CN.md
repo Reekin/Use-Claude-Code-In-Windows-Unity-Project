@@ -6,7 +6,7 @@
 
 基本的安装步骤就是先装wsl，再在wsl里装cc(https://docs.anthropic.com/en/docs/claude-code/setup) 然后在windows开IDE remote 连接到wsl再从那打开windows下的Unity工程。前面的常规和使用步骤我就不作过多介绍了，自己看文档，遇到问题问ai即可。
 
-***踩坑记录***
+#踩坑记录
 
 前排提示：最后发现能相对稳定跑通的IDE只有VSCode
 
@@ -97,7 +97,7 @@ public class WSLProjectGenerator : AssetPostprocessor
   * 因为wsl下无法及时监听文件变动，需要自写vs插件+mcp server让ai每次改完文件通知vscode进行刷新。但我写了一个似乎并没有起效，还在摸索中。
 
 11. 工程内无法用wsl vscode打开文件
-  * 让Unity打开这个bat，传参"$(File)" $(Line)
+  * 让Unity打开这个bat，传参`"$(File)" $(Line)`
 ```
 @echo off
 
@@ -118,7 +118,7 @@ wsl.exe code -r --goto "%wsl_path%:%2" & disown & exit
 12. 新增的代码文件，vscode提示不在当前workspace下
   * 原因未知，重新生成一遍项目文件就好了(Unity内可以直接调用Rider的接口：https://docs.unity3d.com/Packages/com.unity.ide.rider@1.2/api/Packages.Rider.Editor.ProjectGeneration.html) 可以考虑加进unity mcp能力中
 
-基本技巧
+#基本技巧
 1. 在~/.claude/CLAUDE.md里写rules（你希望它如何思考），在~/.claude/settings.json里指定文本编辑器
 ```
 {
@@ -130,7 +130,7 @@ wsl.exe code -r --goto "%wsl_path%:%2" & disown & exit
 2. 在rules中强调，每次完成修改后必须执行git commit，以确保我们能撤销错误修改
 3. 使用dll extractor mcp(https://github.com/Reekin/CSharpDllMetadataExtractor) 获取最准确的接口调用信息，避免大模型知识混乱
 
-***使用体验***
+#使用体验
 
 1. 虽然托管程度更高（一句话能完成更大量的任务且包含测试提交等完整过程），但编写质量并没有比RIPER5加持的cursor好多少。无论是在Unity技术栈的掌握程度，还是对游戏开发框架设计的经验理解，都不如它在web领域表现得那么好，时不时会写出一些实际项目中根本不可能采用的外行或初级的实现。
 2. 基于1，根本不敢选择跳过检查，每一步修改都必须人工review。于是工作流程变成了输入指令-等待几十秒-review-调整的循环。人无法从中脱身，也就提升不了生产力，做不到一些人所说的让它自己跑一整晚。考虑到其编写水平，整体效率反而是下降的。而且很明显这种vibe coding的工作方式真的会让人变蠢。
