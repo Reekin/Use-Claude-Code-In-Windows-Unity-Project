@@ -94,7 +94,8 @@ public class WSLProjectGenerator : AssetPostprocessor
 ```
 
 10. 文件变动后无法立即看到最新linter
-  * 因为wsl下无法及时监听文件变动，需要自写vs插件+mcp server让ai每次改完文件通知vscode进行刷新。但我写了一个似乎并没有起效，还在摸索中。
+  * 因为wsl下无法及时监听文件变动，需要自写vs插件+mcp server让ai每次改完文件通知vscode进行刷新。
+  * 可以直接使用此插件+脚本 https://github.com/Reekin/vscode-mcp-for-wsl-unity
 
 11. 工程内无法用wsl vscode打开文件
   * 让Unity打开这个bat，传参`"$(File)" $(Line)`
@@ -115,8 +116,9 @@ set wsl_path=%wsl_path:J:=/mnt/j%
 
 wsl.exe code -r --goto "%wsl_path%:%2" & disown & exit
 ```
-12. 新增的代码文件，vscode提示不在当前workspace下
-  * 原因未知，重新生成一遍项目文件就好了(Unity内可以直接调用Rider的接口：https://docs.unity3d.com/Packages/com.unity.ide.rider@1.2/api/Packages.Rider.Editor.ProjectGeneration.html) 可以考虑加进unity mcp能力中
+12. cc新增的代码文件，vscode提示不在当前workspace下
+  * 原因未知，重新生成一遍项目文件就好了
+  * 使用我fork的unity-mcp (https://github.com/Reekin/unity-mcp)，并通过添加本仓库内的ProjectFilesRegenerator.cs注册一个新tool，让cc记得改完代码频繁调用它
 
 # 基本技巧
 1. 在~/.claude/CLAUDE.md里写rules（你希望它如何思考），在~/.claude/settings.json里指定文本编辑器
